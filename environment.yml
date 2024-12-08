@@ -1,0 +1,29 @@
+name: lumigauss
+channels:
+  - nvidia/label/cuda-12.1.0
+  - pytorch
+  - conda-forge
+  - anaconda
+  - defaults
+dependencies:
+  - python=3.9
+  - cuda-toolkit=12.1
+  - pytorch==2.1.0
+  - torchvision==0.16.0
+  - torchaudio==2.1.0
+  - pytorch-cuda=12.1
+  - plyfile==1.0.3
+  - tqdm==4.66.2
+  - scipy==1.10.1
+  - tensorboard==2.12.1
+  - pandas==2.0.3
+  - pip
+  - pip:
+      - opencv-python
+      - einops
+      - matplotlib
+      - imageio[ffmpeg]
+      - lpips
+      - scikit-image
+      - submodules/diff-surfel-rasterization
+      - submodules/simple-knn
