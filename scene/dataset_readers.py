@@ -111,7 +111,7 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, path, reading_dir):
             else:
                 raise FileNotFoundError(f"No mask found for {base_image_name} in {mask_path}")
         else:
-            mask = Image.fromarray(np.ones_like(image))
+            mask = Image.fromarray(np.ones_like(image)).convert('L')
 
         cam_info = CameraInfo(uid=uid, R=R, T=T, FovY=FovY, FovX=FovX, image=image,
                               image_path=image_path, image_name=image_name, width=width, height=height, mask=mask)
