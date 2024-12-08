@@ -67,7 +67,8 @@ def getNerfppNorm(cam_info):
 
     return {"translate": translate, "radius": radius}
 
-def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder):
+def readColmapCameras(cam_extrinsics, cam_intrinsics, path, reading_dir):
+    images_folder=os.path.join(path, reading_dir)
     cam_infos = []
     for idx, key in enumerate(cam_extrinsics):
         sys.stdout.write('\r')
@@ -102,7 +103,7 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder):
 
         precomputed_mask=True
         if precomputed_mask:
-            mask_path = Path(images_folder.replace("images", "masks"))
+            mask_path = Path(images_folder.replace(reading_dir, "masks"))
             base_image_name = Path(image_name).stem
             mask_files = list(mask_path.glob(f"{base_image_name}.*"))
             if mask_files:
@@ -160,7 +161,7 @@ def readColmapSceneInfo(path, images, eval, eval_file, llffhold=20):
     
 
     reading_dir = "images" if images == None else images
-    cam_infos_unsorted = readColmapCameras(cam_extrinsics=cam_extrinsics, cam_intrinsics=cam_intrinsics, images_folder=os.path.join(path, reading_dir))
+    cam_infos_unsorted = readColmapCameras(cam_extrinsics=cam_extrinsics, cam_intrinsics=cam_intrinsics, path=path, reading_dir=reading_dir)
     cam_infos = sorted(cam_infos_unsorted.copy(), key = lambda x : x.image_name)
     train_cam_infos = cam_infos
 
@@ -247,6 +248,7 @@ def readCamerasFromTransforms(path, transformsfile, white_background, extension=
     return cam_infos
 
 def readNerfSyntheticInfo(path, white_background, eval, extension=".png"):
+    raise NotImplementedError("To be tested and added")
     print("Reading Training Transforms")
     train_cam_infos = readCamerasFromTransforms(path, "transforms_train.json", white_background, extension)
     print("Reading Test Transforms")
