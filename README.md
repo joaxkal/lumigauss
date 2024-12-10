@@ -88,8 +88,8 @@ https://3dvar.com/Green2003Spherical.pdf
 ### Citation  
 If you find this work useful, please cite
   ```bibtex
-  @misc{kaleta2024lumigausshighfidelityoutdoorrelighting,
-      title={LumiGauss: High-Fidelity Outdoor Relighting with 2D Gaussian Splatting}, 
+ @misc{kaleta2024lumigaussrelightablegaussiansplatting,
+      title={LumiGauss: Relightable Gaussian Splatting in the Wild}, 
       author={Joanna Kaleta and Kacper Kania and Tomasz Trzcinski and Marek Kowalski},
       year={2024},
       eprint={2408.04474},
