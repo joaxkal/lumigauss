@@ -16,7 +16,7 @@ This is the official implementation of **LumiGauss: Relightable Gaussian Splatti
 
 Clone the Repository:
 ```bash
-git clone https://github.com/joaxkal/lumigauss.git
+git clone https://github.com/joaxkal/lumigauss.git --recursive
 cd lumigauss
 ```
 
