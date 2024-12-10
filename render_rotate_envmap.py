@@ -153,27 +153,27 @@ def render_set(dataset : ModelParams, iteration : int, pipeline : PipelineParams
                         scales = gaussians.get_scaling
                         normal_vectors, multiplier = compute_normal_world_space(quaternions, scales, view.world_view_transform, gaussians.get_xyz)
        
-                        #albedo
-                        rgb_precomp_alb =gaussians.get_albedo
-                        render_pkg = render(view, gaussians, pipeline, background, override_color=rgb_precomp_alb)
-                        albedo = render_pkg["render"]
+                        # #albedo
+                        # rgb_precomp_alb =gaussians.get_albedo
+                        # render_pkg = render(view, gaussians, pipeline, background, override_color=rgb_precomp_alb)
+                        # albedo = render_pkg["render"]
                         
                         # unshadowed relightning
-                        rgb_precomp_unshadowed, _ =gaussians.compute_gaussian_rgb(rot_env_sh_torch, shadowed=False, normal_vectors=normal_vectors, env_hemisphere_lightning=True)
+                        rgb_precomp_unshadowed, lum_unshadowed_precomp =gaussians.compute_gaussian_rgb(rot_env_sh_torch, shadowed=False, normal_vectors=normal_vectors)
                         render_pkg = render(view, gaussians, pipeline, background, override_color=rgb_precomp_unshadowed)
                         rendering = render_pkg["render"]
                         renders_unshadowed[render_idx].append(rendering.permute(1,2,0).cpu().numpy())
                         
                         # unshadowed irradiance
-                        lum_unshadowed=rendering /albedo
+                        lum_unshadowed = render(view, gaussians, pipeline, background, override_color=lum_unshadowed_precomp)["render"]
                         
                         # shadowed relightning
-                        rgb_precomp, _ = gaussians.compute_gaussian_rgb(rot_env_sh_torch, multiplier=multiplier)
+                        rgb_precomp, lum_shadowed_precomp = gaussians.compute_gaussian_rgb(rot_env_sh_torch, multiplier=multiplier)
                         rendering = render(view, gaussians, pipeline, background, override_color=rgb_precomp)["render"]
                         renders_shadowed[render_idx].append(rendering.permute(1,2,0).cpu().numpy())
                         
                         # shadowed irradiance
-                        lum_shadowed=rendering /albedo
+                        lum_shadowed = render(view, gaussians, pipeline, background, override_color=lum_shadowed_precomp)["render"]
                         
                         # Compute luminance difference
                         luminance_diff = rgb2greyscale((lum_unshadowed - lum_shadowed).unsqueeze(0)).squeeze()

@@ -155,10 +155,11 @@ def render_set(dataset : ModelParams, iteration : int, pipeline : PipelineParams
         env_sh_torch = torch.tensor(env_sh.T, dtype=torch.float32).cuda()
     
         #unshadowed version
-        rgb_precomp_unshadowed, _ =gaussians.compute_gaussian_rgb(env_sh_torch, shadowed=False, normal_vectors=normal_vectors)
+        rgb_precomp_unshadowed, lum_unshadowed_precomp =gaussians.compute_gaussian_rgb(env_sh_torch, shadowed=False, normal_vectors=normal_vectors)
         rendering_unshadowed = render(viewpoint_cam, gaussians, pipeline, background, override_color=rgb_precomp_unshadowed)["render"]
         rendering_unshadowed = torch.clamp(rendering_unshadowed, 0.0, 1.0)
-        illuminance_unshadowed = rendering_unshadowed /albedo
+        
+        illuminance_unshadowed = render(viewpoint_cam, gaussians, pipeline, background, override_color=lum_unshadowed_precomp)["render"]
 
         if illuminance_unshadowed.max()>1:
             illuminance_unshadowed /= illuminance_unshadowed.max()
@@ -166,11 +167,11 @@ def render_set(dataset : ModelParams, iteration : int, pipeline : PipelineParams
         torchvision.utils.save_image(rendering_unshadowed*mask, os.path.join(render_path, "unshadowed_"+viewpoint_cam.image_name))
 
         # shadowed
-        rgb_precomp, _ = gaussians.compute_gaussian_rgb(env_sh_torch, multiplier = multiplier)
+        rgb_precomp, lum_shadowed_precomp = gaussians.compute_gaussian_rgb(env_sh_torch, multiplier = multiplier)
         render_pkg = render(viewpoint_cam, gaussians, pipeline, background, override_color=rgb_precomp)
         rendering_shadowed = torch.clamp(render_pkg["render"], 0.0, 1.0)
 
-        illuminance_shadowed = render_pkg["render"] /albedo
+        illuminance_shadowed = render(viewpoint_cam, gaussians, pipeline, background, override_color=lum_shadowed_precomp)["render"]
         if illuminance_shadowed.max()>1:
             illuminance_shadowed /= illuminance_shadowed.max()
         torchvision.utils.save_image(torch.clamp(illuminance_shadowed*mask, 0.0, 1.0), os.path.join(render_path, "shadowed_luminance_"+viewpoint_cam.image_name))
