@@ -85,7 +85,7 @@ https://jankautz.com/courses/ShadowCourse/09-RadianceTransfer.pdf
 - Spherical Harmonic Lighting: The Gritty Details by Robin Green  
 https://3dvar.com/Green2003Spherical.pdf
 
-- Stupid Spherical Harmonics Tricks by Peter-Pike Sloan
+- Stupid Spherical Harmonics Tricks by Peter-Pike Sloan  
 https://www.ppsloan.org/publications/StupidSH36.pdf
 
 ### Citation  
