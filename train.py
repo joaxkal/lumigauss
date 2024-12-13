@@ -47,7 +47,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
             gaussians.mlp.load_state_dict(torch.load(os.path.join(checkpoint_dir, "chkpnt_mlp" + str(first_iter) + ".pth")))
             gaussians.embedding.load_state_dict(torch.load(os.path.join(checkpoint_dir, "chkpnt_embedding" + str(first_iter) + ".pth")))
         else:
-            gaussians.embedding.load_state_dict(torch.load(os.path.join(checkpoint_dir, "chkpnt_env" + str(first_iter) + ".pth")))
+            gaussians.env_params.load_state_dict(torch.load(os.path.join(checkpoint_dir, "chkpnt_env" + str(first_iter) + ".pth")))
         gaussians.optimizer_env.load_state_dict(torch.load(os.path.join(checkpoint_dir, "chkpnt_optimizer_env" + str(first_iter) + ".pth")))
 
     bg_color = [1, 1, 1] if dataset.white_background else [0, 0, 0]

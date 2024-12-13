@@ -186,9 +186,6 @@ class GaussianModel:
     def compute_embedding(self, emb_idx):
         return self.embedding(torch.full((1,),emb_idx).cuda())
     
-    def compute_positional_encoding(self):
-        return self.positional_encoding(self.get_xyz)
-    
         
     def compute_gaussian_rgb(self, sh_scene, shadowed=True, multiplier=None, normal_vectors=None, env_hemisphere_lightning=True):
         #Computation of RGB could be implemented in CUDA. If you need it, please take care of it yourself.
