@@ -95,10 +95,7 @@ If you find this work useful, please cite
  @misc{kaleta2024lumigaussrelightablegaussiansplatting,
       title={LumiGauss: Relightable Gaussian Splatting in the Wild}, 
       author={Joanna Kaleta and Kacper Kania and Tomasz Trzcinski and Marek Kowalski},
-      year={2024},
-      eprint={2408.04474},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2408.04474}, 
+      booktitle = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision},
+      year = {2025} 
 }
   ``` 
