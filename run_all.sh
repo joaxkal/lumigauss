@@ -11,7 +11,7 @@ ST_OUTPUT_PATH="output/st"
 
 mkdir -p "$ST_OUTPUT_PATH"
 
-# python train.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
+python train.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
 
 # Test with ground truth environment map
 python test_gt_env_map.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
@@ -35,7 +35,7 @@ LWP_OUTPUT_PATH="output/lwp"
 
 mkdir -p "$LWP_OUTPUT_PATH"
 
-# python train.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
+python train.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
 
 # Test with ground truth environment map
 python test_gt_env_map.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
@@ -59,7 +59,7 @@ LK2_OUTPUT_PATH="output/lk2"
 
 mkdir -p "$LK2_OUTPUT_PATH"
 
-# python train.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
+python train.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
 
 # Test with ground truth environment map
 python test_gt_env_map.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
@@ -83,8 +83,8 @@ TREVI_OUTPUT_PATH="output/trevi"
 
 mkdir -p "$TREVI_OUTPUT_PATH"
 
-# python train.py -s="$TREVI_SOURCE_PATH" -m="$TREVI_OUTPUT_PATH" --consistency_loss_lambda_init 1.0 -r $RESOLUTION \
-#   --with_mlp --iteration 60000 --start_shadowed 30500 --warmup 30000
+python train.py -s="$TREVI_SOURCE_PATH" -m="$TREVI_OUTPUT_PATH" --consistency_loss_lambda_init 1.0 -r $RESOLUTION \
+  --with_mlp --iteration 60000 --start_shadowed 30500 --warmup 30000
 
 # Render rotating environment map
 python render_rotate_envmap.py -s="$TREVI_SOURCE_PATH" -m="$TREVI_OUTPUT_PATH" -r $RESOLUTION --with_mlp \
