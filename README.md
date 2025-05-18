@@ -15,7 +15,7 @@ This is the official implementation of **LumiGauss: Relightable Gaussian Splatti
 </p>
 
 
-### [UPDATE] 
+### [UPDATE 18/05/2025] 
 Preprocessed and used data are available [here](https://zenodo.org/records/15455694). Place the data in `data` subfolder. All configs for evaluation with gt test envmaps are provided in `eval_files` folders (only paths to envmap jpgs need to be adjusted). `run_all.sh` script uses these configs now.  
 
 ### Installation
