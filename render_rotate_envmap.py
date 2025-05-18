@@ -21,7 +21,7 @@ from gaussian_renderer import GaussianModel
 import numpy as np
 import json
 import imageio
-from utils.sh_vis_utils import shReconstructDiffuseMap
+from utils.sh_vis_utils import shReconstructDiffuseMap, applyWindowing
 from utils.sh_rotate_utils import Rotation
 from utils.normal_utils import compute_normal_world_space
 import cv2
@@ -73,7 +73,7 @@ def create_video_for_renders(output_path, shadowed_renders, unshadowed_renders, 
 def create_video_for_envmap(output_path, envs):
     writer_map = imageio.get_writer(output_path, fps=15)
     for env in envs:
-        new_env_img = shReconstructDiffuseMap(env, width=600)
+        new_env_img = np.clip(shReconstructDiffuseMap(env, width=600), 0, None)
         new_env_img = torch.tensor(new_env_img**(1/ 2.2))
         new_env_img = np.array(new_env_img*255).clip(0,255).astype(np.uint8)
         writer_map.append_data(np.array(new_env_img))
@@ -113,6 +113,8 @@ def render_set(dataset : ModelParams, iteration : int, pipeline : PipelineParams
 
         for env_file in sorted(os.listdir(envmaps)):
             env_temp = np.loadtxt(os.path.join(envmaps, env_file))
+            #apply peter-pike sloan windowing (optionally, to avoid negative signal)
+            #env_temp = applyWindowing(coeffs=env_temp)
             env_map_list.append(env_temp)
 
         # angle interpolation

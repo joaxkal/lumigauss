@@ -134,8 +134,8 @@ def training_report(tb_writer, iteration, Ll1_unshadowed, Ll1_shadowed, l1_loss,
                         emb_idx = appearance_lut[viewpoint.image_name]
                         env_sh = scene.gaussians.compute_env_sh(emb_idx)
                         # vis env map
-                        env_sh_learned = shReconstructDiffuseMap(env_sh.T.cpu().detach().numpy(), width=300)
-                        env_sh_learned = (torch.clamp(torch.tensor(env_sh_learned**(1/ 2.2)).permute(2,0,1), 0.0, 1.0))
+                        env_sh_learned = np.clip(shReconstructDiffuseMap(env_sh.T.cpu().detach().numpy(), width=300), 0, None)
+                        env_sh_learned = torch.clamp(torch.tensor(env_sh_learned**(1/ 2.2)).permute(2,0,1), 0.0, 1.0)
                         
                         # render shadowed
                         rgb_precomp,_ = scene.gaussians.compute_gaussian_rgb(env_sh, multiplier=multiplier)

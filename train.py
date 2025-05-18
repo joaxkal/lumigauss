@@ -138,7 +138,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         if sh_gauss_lambda >0 or consistency_loss_lambda >0 or shadow_loss_lambda >0:
             shs_gauss = gaussians.get_features(multiplier).transpose(1, 2).view(-1, 3, (gaussians.max_sh_degree+1)**2)
             shs_gauss_stacked = torch.cat([shs_gauss], dim=0)
-            normal_vectors_stacked = torch.cat([normal_vectors], dim=0)
+            normal_vectors_stacked = torch.cat([normal_vectors], dim=0).detach()
             sh_gauss_loss_raw, consistency_loss_raw, shadow_loss_raw = compute_sh_gauss_losses(shs_gauss_stacked, normal_vectors_stacked)
         
             sh_gauss_loss = sh_gauss_lambda*sh_gauss_loss_raw # eq. 12
@@ -287,7 +287,7 @@ if __name__ == "__main__":
 
     # Start GUI server, configure and run training
     # network_gui.init(args.ip, args.port)
-    torch.autograd.set_detect_anomaly(args.detect_anomaly)
+    torch.autograd.set_detect_anomaly(False) #args.detect_anomaly)
     training(lp.extract(args), op.extract(args), pp.extract(args), args.test_iterations, args.save_iterations, args.checkpoint_iterations, args.start_checkpoint)
 
     # All done

@@ -25,7 +25,7 @@ import numpy as np
 import sys
 import importlib
 from utils.sh_rotate_utils import Rotation
-from utils.sh_vis_utils import shReconstructDiffuseMap
+from utils.sh_vis_utils import shReconstructDiffuseMap, applyWindowing
 from utils.normal_utils import compute_normal_world_space
 import imageio.v2 as im
 from skimage.metrics import structural_similarity as ssim_skimage
@@ -42,6 +42,9 @@ def process_environment_map_image(img_path, scale_high, threshold):
     img = torch.from_numpy(img).float() / 255
     img[img > threshold] *= scale_high
     coeffs = getCoefficientsFromImage(img.numpy(), 2)
+
+    #apply peter-pike sloan windowing (optionally, to avoid negative signal)
+    #coeffs = applyWindowing(coeffs=coeffs)
     return coeffs
 
 

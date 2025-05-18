@@ -2,7 +2,7 @@
 .vscode
 output*
 build
-data
+data*
 *.ply
 **/PKG-INFO
 # submodules
@@ -11,3 +11,4 @@ data
 eval
 *.npz
 **/tmp
+*tar

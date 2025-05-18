@@ -154,7 +154,7 @@ def compute_sh_env_loss(sh_env, N_samples=10):
 
     shs_view = sh_env.unsqueeze(0).permute(0, 2, 1).repeat(N_samples, 1, 1)
     view_dir_unnorm =torch.empty(shs_view.shape[0], 3, device=shs_view.device).uniform_(-1,1)
-    view_dir = view_dir_unnorm / view_dir_unnorm.norm(dim=1, keepdim=True)
+    view_dir = view_dir_unnorm / (view_dir_unnorm.norm(dim=1, keepdim=True)+0.0000001)
     sampled_shs_gauss = eval_sh_point(view_dir, shs_view)
 
     #SH env has to be in R+, eq. 13 

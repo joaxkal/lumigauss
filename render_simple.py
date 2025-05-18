@@ -25,6 +25,7 @@ import torch
 from utils.sh_vis_utils import shReconstructDiffuseMap
 from utils.normal_utils import compute_normal_world_space
 import imageio.v2 as im
+import numpy as np
 
 def render_set(model_path, imgs_subset, iteration, views, train_cameras, gaussians, pipeline, background, 
                appearance_lut, appearance_list = None, only_from_appearence_list = False):
@@ -105,7 +106,7 @@ def render_set(model_path, imgs_subset, iteration, views, train_cameras, gaussia
                 
                 #get new sh env, save it
                 env_sh = gaussians.compute_env_sh(appearance_idx)
-                diffuse_map=shReconstructDiffuseMap(env_sh.T.cpu().detach().numpy())**(1/ 2.2)
+                diffuse_map=np.clip(shReconstructDiffuseMap(env_sh.T.cpu().detach().numpy()), 0, None)**(1/ 2.2)
                 im.imwrite(os.path.join(render_path, '{}_to_{}'.format(view.image_name, app_name) + '_diffuse_map.exr'), diffuse_map)
                 
                 # unshadowed version

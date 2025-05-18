@@ -203,7 +203,7 @@ class GaussianModel:
             else:
                 sh2intensity = eval_sh_point(normal_vectors, sh_scene) #Expected output [B, 3]. Normals have to be unit.
 
-        intensity_hdr = torch.nn.functional.relu(sh2intensity)        
+        intensity_hdr = torch.clamp_min(sh2intensity, 0.00001)
         intensity = intensity_hdr**(1 / 2.2)  # linear to srgb
         rgb = torch.clamp(intensity*albedo, 0.0)
 

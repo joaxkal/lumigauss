@@ -56,7 +56,7 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
         campos=viewpoint_camera.camera_center,
         prefiltered=False,
         debug=False,
-        # pipe.debug
+        # pipe.debug,
     )
 
     rasterizer = GaussianRasterizer(raster_settings=raster_settings)
@@ -119,11 +119,11 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
 
 
     # additional regularizations
-    render_alpha = allmap[1:2]
+    render_alpha = torch.nan_to_num(allmap[1:2], 0, 0)
 
     # get normal map
-    render_normal = allmap[2:5]
-    view_normal = -allmap[2:5].clone()
+    render_normal = torch.nan_to_num(allmap[2:5],0,0)
+    view_normal = -torch.nan_to_num(allmap[2:5],0,0)#.clone()
     render_normal = (render_normal.permute(1,2,0) @ (viewpoint_camera.world_view_transform[:3,:3].T)).permute(2,0,1)
     
     # get median depth map
@@ -132,11 +132,11 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
 
     # get expected depth map
     render_depth_expected = allmap[0:1]
-    render_depth_expected = (render_depth_expected / render_alpha)
     render_depth_expected = torch.nan_to_num(render_depth_expected, 0, 0)
+    render_depth_expected = (render_depth_expected / render_alpha.clamp_min(1e-6))
     
     # get depth distortion map
-    render_dist = allmap[6:7]
+    render_dist = torch.nan_to_num(allmap[6:7],0,0)
 
     # psedo surface attributes
     # surf depth is either median or expected by setting depth_ratio to 1 or 0

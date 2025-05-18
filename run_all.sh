@@ -1,21 +1,21 @@
 #!/bin/bash
 # LumiGauss: Training, Testing, and Rendering
 
-##########################
+# #########################
 # Dataset: ST
-##########################
+# #########################
 RESOLUTION=1
 
-ST_SOURCE_PATH="path/to/st/dataset"
+ST_SOURCE_PATH="data/st_colmap/undistorted"
 ST_OUTPUT_PATH="output/st"
 
 mkdir -p "$ST_OUTPUT_PATH"
 
-python train.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
+# python train.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
 
 # Test with ground truth environment map
 python test_gt_env_map.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
-  --test_config example_test_configs/st
+  --test_config data/st_colmap/eval_files
 
 # Render rotating environment map
 python render_rotate_envmap.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" -r $RESOLUTION --with_mlp \
@@ -25,21 +25,21 @@ python render_rotate_envmap.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" -r $RES
 python render_simple.py -s="$ST_SOURCE_PATH" -m="$ST_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
   --only_from_appearance_list --appearance_list example_test_configs/st/appearance_list.txt
 
-##########################
+# #########################
 # Dataset: LWP
-##########################
+# #########################
 RESOLUTION=1
 
-LWP_SOURCE_PATH="path/to/lwp/dataset"
+LWP_SOURCE_PATH="data/lwp_colmap/undistorted"
 LWP_OUTPUT_PATH="output/lwp"
 
 mkdir -p "$LWP_OUTPUT_PATH"
 
-python train.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
+# python train.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
 
 # Test with ground truth environment map
 python test_gt_env_map.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
-  --test_config example_test_configs/lwp
+  --test_config data/lwp_colmap/eval_files
 
 # Render rotating environment map
 python render_rotate_envmap.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" -r $RESOLUTION --with_mlp \
@@ -49,21 +49,21 @@ python render_rotate_envmap.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" -r $R
 python render_simple.py -s="$LWP_SOURCE_PATH" -m="$LWP_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
   --only_from_appearance_list --appearance_list example_test_configs/lwp/appearance_list.txt
 
-##########################
-# Dataset: LK2
-##########################
+# ##########################
+# # Dataset: LK2
+# ##########################
 RESOLUTION=1
 
-LK2_SOURCE_PATH="path/to/lk2/dataset"
+LK2_SOURCE_PATH="data/lk2_colmap/undistorted"
 LK2_OUTPUT_PATH="output/lk2"
 
 mkdir -p "$LK2_OUTPUT_PATH"
 
-python train.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
+# python train.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --consistency_loss_lambda_init 10.0 -r $RESOLUTION --with_mlp
 
 # Test with ground truth environment map
 python test_gt_env_map.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
-  --test_config example_test_configs/lk2
+  --test_config data/lk2_colmap/eval_files
 
 # Render rotating environment map
 python render_rotate_envmap.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" -r $RESOLUTION --with_mlp \
@@ -73,18 +73,18 @@ python render_rotate_envmap.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" -r $R
 python render_simple.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --with_mlp -r $RESOLUTION \
   --only_from_appearance_list --appearance_list example_test_configs/lk2/appearance_list.txt
 
-##########################
+#########################
 # Dataset: TREVI
-##########################
+#########################
 RESOLUTION=2
 
-TREVI_SOURCE_PATH="path/to/trevi/dataset"
+TREVI_SOURCE_PATH="/data/trevi_fountain/dense"
 TREVI_OUTPUT_PATH="output/trevi"
 
 mkdir -p "$TREVI_OUTPUT_PATH"
 
-python train.py -s="$TREVI_SOURCE_PATH" -m="$TREVI_OUTPUT_PATH" --consistency_loss_lambda_init 1.0 -r $RESOLUTION \
-  --with_mlp --iteration 60000 --start_shadowed 30500 --warmup 30000
+# python train.py -s="$TREVI_SOURCE_PATH" -m="$TREVI_OUTPUT_PATH" --consistency_loss_lambda_init 1.0 -r $RESOLUTION \
+#   --with_mlp --iteration 60000 --start_shadowed 30500 --warmup 30000
 
 # Render rotating environment map
 python render_rotate_envmap.py -s="$TREVI_SOURCE_PATH" -m="$TREVI_OUTPUT_PATH" -r $RESOLUTION --with_mlp \
