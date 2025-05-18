@@ -78,7 +78,7 @@ python render_simple.py -s="$LK2_SOURCE_PATH" -m="$LK2_OUTPUT_PATH" --with_mlp -
 #########################
 RESOLUTION=2
 
-TREVI_SOURCE_PATH="/data/trevi_fountain/dense"
+TREVI_SOURCE_PATH="data/trevi_fountain/dense"
 TREVI_OUTPUT_PATH="output/trevi"
 
 mkdir -p "$TREVI_OUTPUT_PATH"
