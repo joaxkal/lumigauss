@@ -4,7 +4,6 @@ This is the official implementation of **LumiGauss: Relightable Gaussian Splatti
 
 [![Paper](https://img.shields.io/badge/paper-arXiv%3A2408.04474-orange)](https://arxiv.org/abs/2408.04474)
 [![SuppMat](https://img.shields.io/badge/Supplementary%20Material-Google%20Drive-blue)](https://drive.google.com/drive/folders/1AvKkg0MMWPsftFXMPoeuV3jCkmox3XxN?usp=sharing)
-[![Project Page](https://img.shields.io/badge/Project%20Page-8A2BE2?usp=sharing)](https://lumigauss.github.io/)
 [![Used Data](https://img.shields.io/badge/Data-28a745?style=flat)](https://zenodo.org/records/15455694)
 
 
