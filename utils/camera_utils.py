@@ -22,6 +22,7 @@ def loadCam(args, id, cam_info, resolution_scale):
 
     if args.resolution in [1, 2, 4, 8]:
         resolution = round(orig_w/(resolution_scale * args.resolution)), round(orig_h/(resolution_scale * args.resolution))
+        scale = args.resolution
     else:  # should be a type that converts to float
         if args.resolution == -1:
             if orig_w > 1600:
@@ -49,12 +50,29 @@ def loadCam(args, id, cam_info, resolution_scale):
         loaded_mask = None
         gt_image = resized_image_rgb
     
-    resized_mask = PILtoTorch(cam_info.mask, resolution) #, resample = Image.NEAREST)
+    if cam_info.mask is not None:
+        # numpy to pil
+        if isinstance(cam_info.mask, Image.Image):
+            mask_pil = cam_info.mask
+        else:
+            mask_pil = Image.fromarray(np.uint8(np.squeeze(cam_info.mask) * 255))
+        resized_mask = PILtoTorch(mask_pil, resolution)
+    else:
+        resized_mask = None
+
+    if cam_info.k_matrix is not None:
+        cam_info.k_matrix[0, 2] = cam_info.k_matrix[0, 2] / scale
+        cam_info.k_matrix[1, 2] = cam_info.k_matrix[1, 2] / scale
+
+        cam_info.k_matrix[0, 0] = cam_info.k_matrix[0, 0] / scale
+        cam_info.k_matrix[1, 1] = cam_info.k_matrix[1, 1] / scale
+        cam_info.k_matrix[0, 1] = cam_info.k_matrix[0, 1] / scale
 
     return Camera(colmap_id=cam_info.uid, R=cam_info.R, T=cam_info.T, 
                   FoVx=cam_info.FovX, FoVy=cam_info.FovY, 
                   image=gt_image, gt_alpha_mask=loaded_mask,
-                  image_name=cam_info.image_name, uid=id, data_device=args.data_device, mask = resized_mask)
+                  image_name=cam_info.image_name, uid=id, data_device=args.data_device, mask = resized_mask,
+                  k_matrix=cam_info.k_matrix)
 
 def cameraList_from_camInfos(cam_infos, resolution_scale, args):
     camera_list = []

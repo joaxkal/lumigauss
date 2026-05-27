@@ -12,7 +12,7 @@
 import os
 import sys
 from PIL import Image
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from scene.colmap_loader import read_extrinsics_text, read_intrinsics_text, qvec2rotmat, \
     read_extrinsics_binary, read_intrinsics_binary, read_points3D_binary, read_points3D_text
 from utils.graphics_utils import getWorld2View2, focal2fov, fov2focal
@@ -23,6 +23,9 @@ from plyfile import PlyData, PlyElement
 from utils.sh_utils import SH2RGB
 from scene.gaussian_model import BasicPointCloud
 from pathlib import Path
+import cv2 as cv
+from glob import glob
+import imageio
 
 class CameraInfo(NamedTuple):
     uid: int
@@ -36,6 +39,7 @@ class CameraInfo(NamedTuple):
     width: int
     height: int
     mask: np.array
+    k_matrix: Optional[np.array] = None
 
 class SceneInfo(NamedTuple):
     point_cloud: BasicPointCloud
@@ -118,6 +122,73 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, path, reading_dir):
         cam_infos.append(cam_info)
     sys.stdout.write('\n')
     return cam_infos
+
+
+def readDTUCameras(path, render_camera, object_camera):
+    camera_dict = np.load(os.path.join(path, render_camera))
+    images_lis = sorted(glob(os.path.join(path, "image/*.png")))
+    masks_lis = sorted(glob(os.path.join(path, "mask/*.png")))
+    n_images = len(images_lis)
+    cam_infos = []
+    cam_idx = 0
+    for idx in range(0, n_images):
+        image_path = images_lis[idx]
+        image = np.array(Image.open(image_path))
+        mask = np.array(imageio.imread(masks_lis[idx])) / 255.0
+        if mask.shape[-1] == 4:
+            mask = mask[..., :3]
+        image = Image.fromarray((image * mask).astype(np.uint8))
+        world_mat = camera_dict["world_mat_%d" % idx].astype(np.float32)
+        image_name = Path(image_path).stem
+        scale_mat = camera_dict["scale_mat_%d" % idx].astype(np.float32)
+        P = world_mat @ scale_mat
+        P = P[:3, :4]
+
+        K, pose = load_K_Rt_from_P(None, P)
+        R = pose[:3, :3]
+        T = -pose[:3, 3] @ R
+
+        FovY = focal2fov(K[1, 1], image.size[1])
+        FovX = focal2fov(K[0, 0], image.size[0])
+        cam_info = CameraInfo(
+            uid=idx,
+            R=R,
+            T=T,
+            FovY=FovY,
+            FovX=FovX,
+            image=image,
+            image_path=image_path,
+            image_name=image_name,
+            width=image.size[0],
+            height=image.size[1],
+            mask=mask[:, :, :1],
+            k_matrix=K,
+        )
+        cam_infos.append(cam_info)
+    sys.stdout.write("\n")
+    return cam_infos
+
+
+def load_K_Rt_from_P(filename, P=None):
+    if P is None:
+        lines = open(filename).read().splitlines()
+        if len(lines) == 4:
+            lines = lines[1:]
+        lines = [[x[0], x[1], x[2], x[3]] for x in (x.split(" ") for x in lines)]
+        P = np.asarray(lines).astype(np.float32).squeeze()
+
+    out = cv.decomposeProjectionMatrix(P)
+    K = out[0]
+    R = out[1]
+    t = out[2]
+
+    K = K / K[2, 2]
+
+    pose = np.eye(4, dtype=np.float32)
+    pose[:3, :3] = R.transpose()
+    pose[:3, 3] = (t[:3] / t[3])[:, 0]
+
+    return K, pose
 
 
 def fetchPly(path):
@@ -285,7 +356,58 @@ def readNerfSyntheticInfo(path, white_background, eval, extension=".png"):
     return scene_info
 
 
+def readDTUInfo(
+    path, render_camera, object_camera, eval, test_cameras_percentage: float = 0.25
+):
+    print("Reading DTU Info")
+    train_cam_infos = readDTUCameras(path, render_camera, object_camera)
+
+    nerf_normalization = getNerfppNorm(train_cam_infos)
+
+    rng = np.random.RandomState(0)
+    indices = rng.permutation(len(train_cam_infos))
+    split_point = int(len(train_cam_infos) * (1 - test_cameras_percentage))
+
+    if eval:
+        train_indices = indices
+        test_indices = []
+    else:
+        train_indices = indices[:split_point]
+        test_indices = indices[split_point:]
+
+    new_train_cam_infos = [train_cam_infos[idx] for idx in train_indices]
+    new_test_cam_infos = [train_cam_infos[idx] for idx in test_indices]
+
+    train_cam_infos = list(new_train_cam_infos)
+    test_cam_infos = list(new_test_cam_infos)
+
+    print("Num train cams: ", len(train_cam_infos))
+    print("Num test cams: ", len(test_cam_infos))
+
+    ply_path = os.path.join(path, "points3d.ply")
+    # Since this data set has no colmap data, we start with random points
+    num_pts = 100_000
+    print(f"Generating random point cloud ({num_pts})...")
+
+    # We create random points inside the bounds of the synthetic Blender scenes
+    xyz = np.random.random((num_pts, 3)) * 2 - 1
+    shs = np.random.random((num_pts, 3))
+    pcd = BasicPointCloud(points=xyz, colors=shs, normals=np.zeros((num_pts, 3)))
+
+    storePly(ply_path, xyz, shs * 255)
+
+    scene_info = SceneInfo(
+        point_cloud=pcd,
+        train_cameras=train_cam_infos,
+        test_cameras=test_cam_infos,
+        nerf_normalization=nerf_normalization,
+        ply_path=ply_path,
+    )
+    return scene_info
+
+
 sceneLoadTypeCallbacks = {
     "Colmap": readColmapSceneInfo,
     "Blender" : readNerfSyntheticInfo,
+    "DTU": readDTUInfo,
 }
