@@ -130,7 +130,7 @@ def get_combined_args(parser : ArgumentParser):
     except TypeError:
         print("Config file not found at")
         pass
-    args_cfgfile = eval(cfgfile_string)
+    args_cfgfile = eval(cfgfile_string, {"Namespace": Namespace, "__builtins__": {}}, {})
 
     merged_dict = vars(args_cfgfile).copy()
     for k,v in vars(args_cmdline).items():
